@@ -14,28 +14,24 @@ public class DummyTcpDaemon {
 
   private static final Logger LOGGER = Logger.getLogger(DummyTcpDaemon.class.getName());
 
-  public static void main(final String[] args) {
+  public static void main(String[] args) {
 
     try {
       int listenPort = 0;
       listenPort = Integer.parseInt(args[0]);
-      final String s;
-      final String addr;
-      final int port;
-      try (ServerSocket socket = new ServerSocket(listenPort); Socket client = socket.accept(); BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream())); final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));) {
-        s = br.readLine();
-        addr = client.getInetAddress().getHostAddress();
-        port = client.getPort();
+      try (ServerSocket socket = new ServerSocket(listenPort); Socket client = socket.accept(); BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream())); BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));) {
+        String s = br.readLine();
+        String addr = client.getInetAddress().getHostAddress();
+        int port = client.getPort();
         if (s != null) {
           bw.write(s);
         }
         bw.flush();
+        LOGGER.log(Level.INFO, "Received {0} from client {1}:{2}", new Object[]{s, addr, port});
       }
-
-      LOGGER.log(Level.INFO, "Received {0} from client {1}:{2}", new Object[]{s, addr, port});
-    } catch (final IOException | NumberFormatException e) {
+    } catch (IOException | NumberFormatException e) {
       LOGGER.log(Level.SEVERE, null, e);
-    } catch (final ArrayIndexOutOfBoundsException e) {
+    } catch (ArrayIndexOutOfBoundsException e) {
       LOGGER.log(Level.SEVERE, "Please specify port to listen to as the first parameter");
     }
 
